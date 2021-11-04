@@ -167,7 +167,7 @@ function utmaltor_civicrm_alterMailContent(&$content) {
 function _utmaltor_findUrls($text, $params) {
   $domains = Civi::settings()->get('utmaltor_domains');
   $domains = str_replace('.', '\.', $domains);
-  $re = '/(http[^\s"]+(' . $domains . ')[^\s"<]*)/imu';
+  $re = '/(https?\:\/\/(' . $domains . ')[^\s"<]*)/imu';
   $callback = new CRM_Utmaltor_Logic_Alter($params);
   $text = preg_replace_callback($re, [$callback, 'url'], $text);
 

@@ -11,10 +11,21 @@ class CRM_Utmaltor_Logic_Alter {
   public function url($urlMatches) {
     $url = $urlMatches[1];
     $url = $this->fixUrl($url);
+
+    // let's not mess with images or links using civi router
+    if (preg_match('/\.(png|jpg|jpeg|gif|css)[\'"]?$/i', $url)
+      or substr_count($url, 'civicrm/extern/')
+      or substr_count($url, 'civicrm/mailing/')
+      or ($url[0] === '#')
+    ) {
+      return $url;
+    }
+
     $url = $this->alterUtm('source', $url, $this->smarty);
     $url = $this->alterUtm('medium', $url, $this->smarty);
     $url = $this->alterUtm('campaign', $url, $this->smarty);
     $url = $this->alterUtm('content', $url, $this->smarty);
+
     return $url;
   }
 
