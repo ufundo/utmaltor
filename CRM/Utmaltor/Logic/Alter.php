@@ -11,9 +11,10 @@ class CRM_Utmaltor_Logic_Alter {
   public function url($urlMatches) {
     $url = $urlMatches[1];
     $url = $this->fixUrl($url);
-    $url = $this->alterSource($url, $this->smarty);
-    $url = $this->alterMedium($url, $this->smarty);
-    $url = $this->alterCampaign($url, $this->smarty);
+    $url = $this->alterUtm('source', $url, $this->smarty);
+    $url = $this->alterUtm('medium', $url, $this->smarty);
+    $url = $this->alterUtm('campaign', $url, $this->smarty);
+    $url = $this->alterUtm('content', $url, $this->smarty);
     return $url;
   }
 
@@ -21,28 +22,11 @@ class CRM_Utmaltor_Logic_Alter {
     return str_replace('&amp;', '&', $url);
   }
 
-  private function alterSource($url, CRM_Utmaltor_Logic_Smarty $smarty) {
-    $key = 'utm_source';
-    $value = Civi::settings()->get('utmaltor_source');
+  private function alterUtm($key, $url, CRM_Utmaltor_Logic_Smarty $smarty) {
+    $value = Civi::settings()->get('utmaltor_' . $key);
     $value = $smarty->parse($value);
-    $override = (boolean) Civi::settings()->get('utmaltor_source_override');
-    return $this->setKey($url, $key, $value, $override);
-  }
-
-  private function alterMedium($url, CRM_Utmaltor_Logic_Smarty $smarty) {
-    $key = 'utm_medium';
-    $value = Civi::settings()->get('utmaltor_medium');
-    $value = $smarty->parse($value);
-    $override = (boolean) Civi::settings()->get('utmaltor_medium_override');
-    return $this->setKey($url, $key, $value, $override);
-  }
-
-  private function alterCampaign($url, CRM_Utmaltor_Logic_Smarty $smarty) {
-    $key = 'utm_campaign';
-    $value = Civi::settings()->get('utmaltor_campaign');
-    $value = $smarty->parse($value);
-    $override = (boolean) Civi::settings()->get('utmaltor_campaign_override');
-    return $this->setKey($url, $key, $value, $override);
+    $override = (boolean) Civi::settings()->get('utmaltor_' . $key . '_override');
+    return $this->setKey($url, 'utm_' . $key, $value, $override);
   }
 
   private function setKey($url, $key, $value, $override = FALSE) {
